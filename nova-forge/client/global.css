@@ -1,0 +1,253 @@
+/** @import must precede all other statements */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    font-size: 110%;
+    /* Globally increases size of all rem-based elements */
+  }
+}
+
+@layer base {
+
+  /**
+   * Dark SaaS Theme with Glassmorphism & Neon Accents
+   * tailwind.config.ts expects HSL values format: "hue saturation% lightness%"
+  */
+  :root {
+    /* Background & Base Colors */
+    --background: 225 30% 8%;
+    --foreground: 220 13% 91%;
+
+    /* Card & Popover */
+    --card: 225 28% 12%;
+    --card-foreground: 220 13% 91%;
+
+    --popover: 225 28% 12%;
+    --popover-foreground: 220 13% 91%;
+
+    /* Primary - Bright Cyan/Electric Blue */
+    --primary: 189 100% 50%;
+    --primary-foreground: 225 30% 8%;
+
+    /* Secondary - Deep Purple Blue */
+    --secondary: 260 60% 35%;
+    --secondary-foreground: 220 13% 91%;
+
+    /* Muted - Soft Gray */
+    --muted: 225 20% 30%;
+    --muted-foreground: 220 13% 65%;
+
+    /* Accent - Hot Magenta */
+    --accent: 320 100% 50%;
+    --accent-foreground: 225 30% 8%;
+
+    /* Destructive - Red */
+    --destructive: 0 85% 55%;
+    --destructive-foreground: 220 13% 91%;
+
+    /* Border & Input */
+    --border: 225 20% 20%;
+    --input: 225 20% 20%;
+    --ring: 189 100% 50%;
+
+    /* Radius */
+    --radius: 0.75rem;
+
+    /* Sidebar */
+    --sidebar-background: 225 30% 8%;
+    --sidebar-foreground: 220 13% 91%;
+    --sidebar-primary: 189 100% 50%;
+    --sidebar-primary-foreground: 225 30% 8%;
+    --sidebar-accent: 320 100% 50%;
+    --sidebar-accent-foreground: 220 13% 91%;
+    --sidebar-border: 225 20% 20%;
+    --sidebar-ring: 189 100% 50%;
+
+    --sidebar-ring: 189 100% 50%;
+
+    /* Neon Accent Colors */
+    --neon-cyan: 189 100% 50%;
+    --neon-magenta: 320 100% 50%;
+    --neon-lime: 120 100% 45%;
+    --neon-purple: 270 100% 50%;
+  }
+
+  .light {
+    --background: 0 0% 100%;
+    /* Pure black text for maximum sharpness */
+    --foreground: 0 0% 0%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 0%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 0%;
+
+    --primary: 189 100% 30%;
+    /* Dark teal */
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+
+    --muted: 210 40% 96%;
+    /* Much darker gray for muted text */
+    --muted-foreground: 0 0% 40%;
+
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 220 13% 90%;
+    --input: 220 13% 90%;
+    --ring: 0 0% 0%;
+
+    --radius: 0.5rem;
+
+    --sidebar-background: 0 0% 98%;
+    /* Slightly off-white for sidebar separation */
+    --sidebar-foreground: 0 0% 0%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 90%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+
+    /* Darker neon accents for light mode visibility */
+    --neon-cyan: 189 100% 30%;
+    --neon-magenta: 320 100% 35%;
+    --neon-lime: 120 100% 25%;
+    --neon-purple: 270 100% 40%;
+  }
+
+  /* Dark mode is the default */
+  .dark {
+    --background: 225 30% 8%;
+    --foreground: 220 13% 91%;
+
+    --card: 225 28% 12%;
+    --card-foreground: 220 13% 91%;
+
+    --popover: 225 28% 12%;
+    --popover-foreground: 220 13% 91%;
+
+    --primary: 189 100% 50%;
+    --primary-foreground: 225 30% 8%;
+
+    --secondary: 260 60% 35%;
+    --secondary-foreground: 220 13% 91%;
+
+    --muted: 225 20% 30%;
+    --muted-foreground: 220 13% 65%;
+
+    --accent: 320 100% 50%;
+    --accent-foreground: 225 30% 8%;
+
+    --destructive: 0 85% 55%;
+    --destructive-foreground: 220 13% 91%;
+
+    --border: 225 20% 20%;
+    --input: 225 20% 20%;
+    --ring: 189 100% 50%;
+
+    --sidebar-background: 225 30% 8%;
+    --sidebar-foreground: 220 13% 91%;
+    --sidebar-primary: 189 100% 50%;
+    --sidebar-primary-foreground: 225 30% 8%;
+    --sidebar-accent: 320 100% 50%;
+    --sidebar-accent-foreground: 220 13% 91%;
+    --sidebar-border: 225 20% 20%;
+    --sidebar-ring: 189 100% 50%;
+
+    --neon-cyan: 189 100% 50%;
+    --neon-magenta: 320 100% 50%;
+    --neon-lime: 120 100% 45%;
+    --neon-purple: 270 100% 50%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    @apply bg-background;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+
+  :where(p, span, li, h1, h2, h3, h4, h5, h6, a, button, label, td, th) {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
+  pre,
+  code {
+    overflow-x: auto;
+    white-space: pre;
+  }
+}
+
+@layer components {
+
+  /* Glassmorphism Effects */
+  .glass {
+    @apply bg-card/30 backdrop-blur-md border border-border;
+  }
+
+  .glass-sm {
+    @apply bg-card/20 backdrop-blur-sm border border-border/50;
+  }
+
+  .glass-lg {
+    @apply bg-card/60 backdrop-blur-xl border border-border;
+  }
+
+  /* Neon Glow Effects */
+  .glow-cyan {
+    @apply text-neon-cyan shadow-lg shadow-neon-cyan/50;
+  }
+
+  .glow-magenta {
+    @apply text-neon-magenta shadow-lg shadow-neon-magenta/50;
+  }
+
+  .glow-lime {
+    @apply text-neon-lime shadow-lg shadow-neon-lime/50;
+  }
+
+  .glow-purple {
+    @apply text-neon-purple shadow-lg shadow-neon-purple/50;
+  }
+
+  /* Card with Glassmorphism */
+  .card-glass {
+    @apply glass rounded-lg p-6;
+  }
+
+  /* Smooth Gradient Backgrounds */
+  .gradient-bg {
+    @apply bg-gradient-to-br from-primary/10 via-transparent to-accent/10;
+  }
+
+  /* Neon Border Accent */
+  .border-neon-cyan {
+    @apply border-l-4 border-l-neon-cyan;
+  }
+
+  /* Glassmorphic Button */
+  .btn-glass {
+    @apply glass px-6 py-2.5 rounded-lg font-medium transition-all duration-300 hover:bg-white/10 hover:border-white/20 active:scale-95;
+  }
+}
