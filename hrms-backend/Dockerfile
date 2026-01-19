@@ -12,8 +12,11 @@ COPY pom.xml .
 # Copy the source code
 COPY src src
 
-# Make the mvnw executable
-RUN chmod +x mvnw
+# Install necessary tools
+RUN apk add --no-cache dos2unix
+
+# Make the mvnw executable and fix line endings
+RUN dos2unix mvnw && chmod +x mvnw
 
 # Package the application
 RUN ./mvnw package -DskipTests
