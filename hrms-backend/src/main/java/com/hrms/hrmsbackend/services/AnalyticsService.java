@@ -59,7 +59,8 @@ public class AnalyticsService {
                                 .presentToday((int) attendanceRepository.findAll().stream()
                                                 .filter(a -> a.getDate().equals(
                                                                 LocalDate.now(java.time.ZoneId.of("Asia/Kolkata")))
-                                                                && a.getStatus() == AttendanceStatus.PRESENT)
+                                                                && (a.getStatus() == AttendanceStatus.PRESENT || a
+                                                                                .getStatus() == AttendanceStatus.LATE))
                                                 .count())
                                 .onLeaveToday((int) leaveRepository.findAll().stream()
                                                 .filter(l -> l.getStartDate().isBefore(LocalDate.now().plusDays(1))
