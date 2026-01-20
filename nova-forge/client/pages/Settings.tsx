@@ -179,7 +179,7 @@ const Settings: React.FC = () => {
                                 </div>
                                 <div className="space-y-2">
                                     <Label>Department</Label>
-                                    <Input defaultValue="Engineering" disabled className="bg-accent/5 border-border text-foreground opacity-50" />
+                                    <Input defaultValue={user?.department || "Not Assigned"} disabled className="bg-accent/5 border-border text-foreground opacity-50" />
                                 </div>
                             </div>
                             <div className="flex justify-between pt-4">

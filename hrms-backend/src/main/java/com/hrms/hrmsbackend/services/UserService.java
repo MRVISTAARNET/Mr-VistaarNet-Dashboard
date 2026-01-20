@@ -49,7 +49,9 @@ public class UserService {
             java.nio.file.Files.copy(file.getInputStream(), filePath,
                     java.nio.file.StandardCopyOption.REPLACE_EXISTING);
 
-            String fileUrl = "http://localhost:8080/uploads/avatars/" + fileName;
+            String baseUrl = org.springframework.web.servlet.support.ServletUriComponentsBuilder
+                    .fromCurrentContextPath().build().toUriString();
+            String fileUrl = baseUrl + "/uploads/avatars/" + fileName;
             user.setAvatar(fileUrl);
             userRepository.save(user);
 

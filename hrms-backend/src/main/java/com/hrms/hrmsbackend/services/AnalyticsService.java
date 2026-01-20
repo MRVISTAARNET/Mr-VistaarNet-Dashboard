@@ -57,7 +57,8 @@ public class AnalyticsService {
                                 .totalEmployees((int) userRepository.count())
                                 .totalDepartments((int) departmentRepository.count())
                                 .presentToday((int) attendanceRepository.findAll().stream()
-                                                .filter(a -> a.getDate().equals(LocalDate.now())
+                                                .filter(a -> a.getDate().equals(
+                                                                LocalDate.now(java.time.ZoneId.of("Asia/Kolkata")))
                                                                 && a.getStatus() == AttendanceStatus.PRESENT)
                                                 .count())
                                 .onLeaveToday((int) leaveRepository.findAll().stream()
