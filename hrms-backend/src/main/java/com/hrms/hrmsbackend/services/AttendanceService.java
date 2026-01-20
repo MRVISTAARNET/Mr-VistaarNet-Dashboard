@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -19,6 +20,7 @@ public class AttendanceService {
 
     private final AttendanceRepository attendanceRepository;
     private final UserRepository userRepository;
+    private final ZoneId zoneId = ZoneId.of("Asia/Kolkata");
 
     public List<AttendanceDto> getAllAttendance() {
         return attendanceRepository.findAll().stream()
@@ -33,11 +35,12 @@ public class AttendanceService {
     }
 
     public AttendanceDto checkIn(Long employeeId) {
-        if (attendanceRepository.findByEmployeeIdAndDate(employeeId, LocalDate.now()).isPresent()) {
+        LocalDate today = LocalDate.now(zoneId);
+        if (attendanceRepository.findByEmployeeIdAndDate(employeeId, today).isPresent()) {
             throw new RuntimeException("Already clocked in today");
         }
 
-        LocalTime now = LocalTime.now();
+        LocalTime now = LocalTime.now(zoneId);
 
         // Enforce 9:00 AM rule
         if (now.isBefore(LocalTime.of(9, 0))) {
@@ -48,7 +51,7 @@ public class AttendanceService {
 
         Attendance attendance = Attendance.builder()
                 .employeeId(employeeId)
-                .date(LocalDate.now())
+                .date(today)
                 .checkIn(now)
                 .status(status)
                 .build();
@@ -56,19 +59,16 @@ public class AttendanceService {
     }
 
     public AttendanceDto checkOut(Long employeeId) {
-        // Enforce 6:00 PM rule REMOVED as per user request
-        // if (LocalTime.now().isBefore(LocalTime.of(18, 0))) {
-        // throw new RuntimeException("Check-out is only allowed after 6:00 PM");
-        // }
+        LocalDate today = LocalDate.now(zoneId);
 
-        Attendance attendance = attendanceRepository.findByEmployeeIdAndDate(employeeId, LocalDate.now())
+        Attendance attendance = attendanceRepository.findByEmployeeIdAndDate(employeeId, today)
                 .orElseThrow(() -> new RuntimeException("No check-in found for today"));
 
         if (attendance.getCheckOut() != null) {
             throw new RuntimeException("Already checked out today");
         }
 
-        attendance.setCheckOut(LocalTime.now());
+        attendance.setCheckOut(LocalTime.now(zoneId));
         // Calculate hours worked (simplistic)
         if (attendance.getCheckIn() != null) {
             long minutes = java.time.Duration.between(attendance.getCheckIn(), attendance.getCheckOut()).toMinutes();
