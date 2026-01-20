@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
-
+import { useMessagePoller } from '@/hooks/useMessagePoller';
 import NotificationPopover from './NotificationPopover';
 import CommandPalette from './CommandPalette';
 import ContactHRDialog from './ContactHRDialog';
@@ -35,6 +35,7 @@ interface NavItem {
 
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, logout } = useAuth();
+  useMessagePoller(); // Start polling for messages
   const navigate = useNavigate();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(true);

@@ -40,4 +40,7 @@ public class Document {
 
     private Long verifiedBy;
     private LocalDate verifiedDate;
+
+    @Column(name = "is_global")
+    private Boolean isGlobal;
 }

@@ -28,7 +28,7 @@ public class DocumentService {
 
     public List<DocumentDto> getDocumentsByEmployeeId(Long employeeId) {
         return documentRepository.findAll().stream()
-                .filter(doc -> doc.getEmployeeId().equals(employeeId))
+                .filter(doc -> doc.getEmployeeId().equals(employeeId) || Boolean.TRUE.equals(doc.getIsGlobal()))
                 .map(this::mapToDto)
                 .collect(Collectors.toList());
     }
@@ -46,7 +46,8 @@ public class DocumentService {
         return mapToDto(documentRepository.save(doc));
     }
 
-    public DocumentDto uploadFile(org.springframework.web.multipart.MultipartFile file, Long employeeId, String type) {
+    public DocumentDto uploadFile(org.springframework.web.multipart.MultipartFile file, Long employeeId, String type,
+            Boolean isGlobal) {
         try {
             String uploadDir = "uploads/documents/";
             java.nio.file.Path uploadPath = java.nio.file.Paths.get(uploadDir);
@@ -68,6 +69,7 @@ public class DocumentService {
                     .fileUrl(fileUrl)
                     .uploadDate(LocalDate.now())
                     .status(DocumentStatus.PENDING)
+                    .isGlobal(isGlobal)
                     .build();
 
             return mapToDto(documentRepository.save(doc));
@@ -112,6 +114,7 @@ public class DocumentService {
                 .verifiedBy(verifierName)
                 .verifiedDate(doc.getVerifiedDate() != null ? doc.getVerifiedDate().toString() : null)
                 .fileUrl(doc.getFileUrl())
+                .isGlobal(doc.getIsGlobal())
                 .build();
     }
 }

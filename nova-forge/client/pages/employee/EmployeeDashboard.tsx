@@ -100,8 +100,8 @@ const EmployeeDashboard: React.FC = () => {
         toast.success('Clocked in successfully');
       }
     },
-    onError: () => {
-      toast.error('Failed to clock in');
+    onError: (error: any) => {
+      toast.error(error.response?.data || error.message || 'Failed to clock in');
     }
   });
 

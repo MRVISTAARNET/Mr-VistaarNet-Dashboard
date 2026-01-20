@@ -24,8 +24,12 @@ public class AttendanceController {
     }
 
     @PostMapping("/check-in/{employeeId}")
-    public ResponseEntity<AttendanceDto> checkIn(@PathVariable Long employeeId) {
-        return ResponseEntity.ok(attendanceService.checkIn(employeeId));
+    public ResponseEntity<?> checkIn(@PathVariable Long employeeId) {
+        try {
+            return ResponseEntity.ok(attendanceService.checkIn(employeeId));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @PutMapping("/check-out/{employeeId}")

@@ -136,6 +136,7 @@ public class CoreDtos {
         private String verifiedBy;
         private String verifiedDate;
         private String fileUrl;
+        private Boolean isGlobal;
     }
 
     @Data

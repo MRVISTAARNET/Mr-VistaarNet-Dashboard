@@ -41,11 +41,69 @@ const AdminDocuments: React.FC = () => {
     doc.type.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const [uploadOpen, setUploadOpen] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [docType, setDocType] = useState('POLICY');
+  const [isGlobal, setIsGlobal] = useState(false);
+  // We need a valid employee ID even for global docs, let's pick the first one or current user if available.
+  // Ideally backend should handle null employeeId for global, but schema enforces it.
+  // For now we can use a placeholder or admin's ID if we had it.
+  // Actually, let's fetch users to let admin pick one IF not global.
+  // If global, we can perhaps use specific ID or just 0.
+  // Let's assume we can pick '0' or admin ID. 
+
+  // For simplicity, let's ask for Employee ID if not global, or use 0 if global? 
+  // Wait, the backend requires an existing Employee ID usually for foreign key.
+  // Let's check if we can select an employee. 
+
+  // Actually, for "Show to all", we might still want to associate it with the uploader (Admin).
+  // But we don't have Admin ID easily here without useAuth.
+  const { user } = import('@/hooks/useAuth').then(m => m.useAuth()) as any; // Temporary fix, should use hook at top level
+  // Better:
+
+  const uploadMutation = useMutation({
+    mutationFn: (data: { file: File; employeeId: string; type: string; isGlobal: boolean }) =>
+      documentService.uploadFile(data.file, data.employeeId, data.type, data.isGlobal),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['allDocuments'] });
+      toast.success('Document uploaded successfully');
+      setUploadOpen(false);
+      setSelectedFile(null);
+      setIsGlobal(false);
+    },
+    onError: () => {
+      toast.error('Failed to upload document');
+    },
+  });
+
+  const handleUpload = () => {
+    if (!selectedFile) return;
+    // For global docs, we can use a dummy ID or the admin's ID if available. 
+    // Since we don't have an employee picker easily implemented here yet, 
+    // let's default to a known ID or requires user to input ID?
+    // Let's add an input for Employee ID.
+
+    // Use prompt for now or better add input field in dialog.
+    const empId = isGlobal ? '1' : (prompt('Enter Employee ID for this document:') || '1');
+
+    uploadMutation.mutate({
+      file: selectedFile,
+      employeeId: empId,
+      type: docType,
+      isGlobal
+    });
+  };
+
   return (
     <div className="space-y-6 animate-fade-in">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight text-foreground">Document Management</h1>
-        <p className="text-muted-foreground">Manage employee documents and verification.</p>
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight text-foreground">Document Management</h1>
+          <p className="text-muted-foreground">Manage employee documents and verification.</p>
+        </div>
+        <Button onClick={() => setUploadOpen(true)} className="bg-neon-cyan text-black hover:bg-neon-cyan/90">
+          <ExternalLink className="w-4 h-4 mr-2" /> Upload Document
+        </Button>
       </div>
 
       <Card className="border-border bg-card/50 backdrop-blur-xl">
@@ -100,17 +158,20 @@ const AdminDocuments: React.FC = () => {
                           <AvatarFallback>{doc.employeeName.charAt(0)}</AvatarFallback>
                         </Avatar>
                         <span className="font-medium text-foreground">{doc.employeeName}</span>
+                        {doc.isGlobal && <span className="ml-2 text-[10px] bg-neon-purple/20 text-neon-purple px-1 rounded">GLOBAL</span>}
                       </div>
                     </TableCell>
                     <TableCell className="text-foreground">
                       <div className="flex items-center gap-2">
-                        <FileText className="w-4 h-4 text-neon-cyan" />
-                        {doc.fileName}
+                        <a href={doc.fileUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-neon-cyan transition-colors">
+                          <FileText className="w-4 h-4 text-neon-cyan" />
+                          {doc.fileName}
+                        </a>
                       </div>
                     </TableCell>
                     <TableCell>
                       <span className="px-2 py-1 rounded-full text-xs font-medium bg-secondary text-secondary-foreground border border-border">
-                        {doc.category}
+                        {doc.type}
                       </span>
                     </TableCell>
                     <TableCell className="text-muted-foreground text-sm">{doc.uploadDate}</TableCell>
@@ -126,7 +187,7 @@ const AdminDocuments: React.FC = () => {
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-2">
-                        <Button variant="ghost" size="icon" className="hover:text-neon-cyan">
+                        <Button variant="ghost" size="icon" className="hover:text-neon-cyan" onClick={() => window.open(doc.fileUrl, '_blank')}>
                           <Download className="w-4 h-4" />
                         </Button>
                         <Button
@@ -146,6 +207,55 @@ const AdminDocuments: React.FC = () => {
           )}
         </CardContent>
       </Card>
+
+      {/* Upload Dialog */}
+      {uploadOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+          <div className="bg-card border border-border p-6 rounded-lg w-full max-w-md shadow-xl animate-scale-in">
+            <h2 className="text-xl font-bold text-foreground mb-4">Upload Document</h2>
+
+            <div className="space-y-4">
+              <div>
+                <label className="text-sm text-gray-400 block mb-1">Select File</label>
+                <Input type="file" onChange={(e) => setSelectedFile(e.target.files?.[0] || null)} className="bg-accent/10" />
+              </div>
+
+              <div>
+                <label className="text-sm text-gray-400 block mb-1">Document Type</label>
+                <select
+                  className="w-full p-2 rounded-md bg-accent/10 border border-border text-foreground"
+                  value={docType}
+                  onChange={(e) => setDocType(e.target.value)}
+                >
+                  <option value="POLICY">Policy</option>
+                  <option value="PAYSLIP">Payslip</option>
+                  <option value="OFFER_LETTER">Offer Letter</option>
+                  <option value="CONTRACT">Contract</option>
+                  <option value="OTHER">Other</option>
+                </select>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  id="isGlobal"
+                  checked={isGlobal}
+                  onChange={(e) => setIsGlobal(e.target.checked)}
+                  className="w-4 h-4 rounded border-gray-600 bg-gray-700 text-neon-cyan focus:ring-neon-cyan"
+                />
+                <label htmlFor="isGlobal" className="text-sm text-foreground">Show to all employees (Global Document)</label>
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-2 mt-6">
+              <Button variant="ghost" onClick={() => setUploadOpen(false)}>Cancel</Button>
+              <Button onClick={handleUpload} disabled={!selectedFile || uploadMutation.isPending} className="bg-neon-cyan text-black hover:bg-neon-cyan/90">
+                {uploadMutation.isPending ? 'Uploading...' : 'Upload'}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

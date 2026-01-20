@@ -14,6 +14,7 @@ export interface Document {
     verifiedDate?: string;
     fileUrl: string;
     category?: string; // Frontend helper
+    isGlobal?: boolean;
 }
 
 interface DocumentDto {
@@ -52,19 +53,20 @@ export const documentService = {
         return mapToDocument(dto);
     },
 
-    uploadFile: async (formData: FormData): Promise<Document> => {
-        const token = localStorage.getItem('token');
-        const res = await fetch(`${API_URL}/api/documents/upload-file`, {
-            method: 'POST',
-            headers: { 'Authorization': `Bearer ${token}` },
-            body: formData
+
+
+    uploadFile: async (file: File, employeeId: string, type: string, isGlobal: boolean): Promise<Document> => {
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('employeeId', employeeId);
+        formData.append('type', type);
+        formData.append('isGlobal', String(isGlobal));
+        const response = await api.post<Document>('/documents/upload-file', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
         });
-        if (!res.ok) {
-            const errorText = await res.text();
-            throw new Error(`Upload failed: ${errorText || res.statusText}`);
-        }
-        const dto = await res.json();
-        return mapToDocument(dto);
+        return response;
     },
 
     deleteDocument: async (id: string): Promise<void> => {

@@ -34,10 +34,11 @@ public class DocumentController {
     public ResponseEntity<DocumentDto> uploadFile(
             @RequestParam("file") org.springframework.web.multipart.MultipartFile file,
             @RequestParam("employeeId") String employeeIdStr,
-            @RequestParam("type") String type) {
+            @RequestParam("type") String type,
+            @RequestParam(value = "isGlobal", required = false) Boolean isGlobal) {
         try {
             Long employeeId = Long.parseLong(employeeIdStr);
-            return ResponseEntity.ok(documentService.uploadFile(file, employeeId, type));
+            return ResponseEntity.ok(documentService.uploadFile(file, employeeId, type, isGlobal));
         } catch (NumberFormatException e) {
             return ResponseEntity.badRequest().build();
         }
