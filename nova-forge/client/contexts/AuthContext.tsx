@@ -138,34 +138,73 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   };
 
-
-  const logout = () => {
-    setUser(null);
-    localStorage.removeItem('user');
+}
+    } finally {
+  setIsLoading(false);
+}
   };
 
-  const updateUser = (updates: Partial<User>) => {
-    if (!user) return;
-    const updatedUser = { ...user, ...updates };
-    setUser(updatedUser);
-    localStorage.setItem('user', JSON.stringify(updatedUser));
+
+// Auto-refresh user data on mount/reload to ensure department and other fields are up to date
+useEffect(() => {
+  const refreshUser = async () => {
+    if (user?.id) {
+      try {
+        const response = await fetch(`${API_URL}/api/users/${user.id}`, {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token') || 'dummy-token'}`
+          }
+        });
+        if (response.ok) {
+          const data = await response.json();
+          const updatedUser = {
+            ...user,
+            ...data,
+            // Backend might return firstName/lastName or just the DTO fields. 
+            // Our DTO has firstName/lastName. Layout expects 'name'
+            name: `${data.firstName} ${data.lastName}`,
+            // Ensure department is set
+            department: data.department
+          };
+          setUser(updatedUser);
+          localStorage.setItem('user', JSON.stringify(updatedUser));
+        }
+      } catch (e) {
+        console.error("Failed to refresh user data", e);
+      }
+    }
   };
 
-  return (
-    <AuthContext.Provider
-      value={{
-        user,
-        isLoading,
-        login,
-        changePassword,
-        forgotPassword,
-        resetPassword,
-        logout,
-        updateUser,
-        isAuthenticated: !!user,
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
-  );
+  refreshUser();
+}, []); // Run once on mount
+
+const logout = () => {
+  setUser(null);
+  localStorage.removeItem('user');
+};
+
+const updateUser = (updates: Partial<User>) => {
+  if (!user) return;
+  const updatedUser = { ...user, ...updates };
+  setUser(updatedUser);
+  localStorage.setItem('user', JSON.stringify(updatedUser));
+};
+
+return (
+  <AuthContext.Provider
+    value={{
+      user,
+      isLoading,
+      login,
+      changePassword,
+      forgotPassword,
+      resetPassword,
+      logout,
+      updateUser,
+      isAuthenticated: !!user,
+    }}
+  >
+    {children}
+  </AuthContext.Provider>
+);
 };

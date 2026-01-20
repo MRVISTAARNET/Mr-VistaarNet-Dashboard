@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final com.hrms.hrmsbackend.repositories.DepartmentRepository departmentRepository;
 
     public void updateProfile(Long userId, ProfileUpdateDto dto) {
         User user = userRepository.findById(userId)
@@ -31,6 +32,29 @@ public class UserService {
         }
 
         userRepository.save(user);
+    }
+
+    public com.hrms.hrmsbackend.dtos.AuthDtos.UserDto getUserById(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        String deptName = null;
+        if (user.getDepartmentId() != null) {
+            deptName = departmentRepository.findById(user.getDepartmentId())
+                    .map(com.hrms.hrmsbackend.models.Department::getName)
+                    .orElse(null);
+        }
+
+        return com.hrms.hrmsbackend.dtos.AuthDtos.UserDto.builder()
+                .id(user.getId())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .email(user.getEmail())
+                .role(user.getRole().name().toLowerCase())
+                .avatar(user.getAvatar())
+                .department(deptName)
+                .isFirstLogin(user.isFirstLogin())
+                .build();
     }
 
     public void uploadAvatar(Long userId, org.springframework.web.multipart.MultipartFile file) {

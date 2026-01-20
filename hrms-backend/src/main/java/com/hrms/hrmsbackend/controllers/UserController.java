@@ -13,6 +13,16 @@ public class UserController {
 
     private final UserService userService;
 
+    @GetMapping("/{userId}")
+    public ResponseEntity<com.hrms.hrmsbackend.dtos.AuthDtos.UserDto> getUser(@PathVariable String userId) {
+        try {
+            Long id = Long.parseLong(userId);
+            return ResponseEntity.ok(userService.getUserById(id));
+        } catch (NumberFormatException e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
     @PutMapping("/{userId}/profile")
     public ResponseEntity<Void> updateProfile(@PathVariable String userId, @RequestBody ProfileUpdateDto dto) {
         try {
