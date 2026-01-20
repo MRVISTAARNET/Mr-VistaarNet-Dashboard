@@ -8,6 +8,7 @@ import com.hrms.hrmsbackend.models.User;
 import com.hrms.hrmsbackend.models.enums.Role;
 import com.hrms.hrmsbackend.models.enums.UserStatus;
 import com.hrms.hrmsbackend.repositories.UserRepository;
+import com.hrms.hrmsbackend.repositories.DepartmentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 public class AuthenticationService {
 
     private final UserRepository userRepository;
+    private final DepartmentRepository departmentRepository;
     private final org.springframework.security.crypto.password.PasswordEncoder passwordEncoder;
 
     public AuthenticationResponse register(RegisterRequest request) {
@@ -26,6 +28,8 @@ public class AuthenticationService {
                 .password(passwordEncoder.encode(request.getPassword())) // Encrypt
                 .role(Role.valueOf(request.getRole().toUpperCase()))
                 .status(UserStatus.ACTIVE)
+                .departmentId(request.getDepartmentId())
+                .positionId(request.getPositionId())
                 .isVerified(true)
                 .isFirstLogin(true)
                 .build();
@@ -63,6 +67,13 @@ public class AuthenticationService {
     }
 
     private AuthDtos.UserDto mapToDto(User user) {
+        String deptName = null;
+        if (user.getDepartmentId() != null) {
+            deptName = departmentRepository.findById(user.getDepartmentId())
+                    .map(com.hrms.hrmsbackend.models.Department::getName)
+                    .orElse(null);
+        }
+
         return AuthDtos.UserDto.builder()
                 .id(user.getId())
                 .firstName(user.getFirstName())
@@ -70,7 +81,8 @@ public class AuthenticationService {
                 .email(user.getEmail())
                 .role(user.getRole().name().toLowerCase())
                 .avatar(user.getAvatar())
-                .isFirstLogin(user.isFirstLogin()) // Add this field to DTO
+                .department(deptName)
+                .isFirstLogin(user.isFirstLogin())
                 .build();
     }
 
