@@ -65,7 +65,7 @@ public class SecurityConfig {
         @Bean
         public CorsConfigurationSource corsConfigurationSource() {
                 CorsConfiguration configuration = new CorsConfiguration();
-                String allowedOriginsEnv = System.getenv("CORS_ALLOWED_ORIGINS");
+                // String allowedOriginsEnv = System.getenv("CORS_ALLOWED_ORIGINS");
                 // Allow all origins patterns to fix CORS issues on varied deployment URLs
                 configuration.addAllowedOriginPattern("*");
                 // configuration.setAllowedOrigins(allowedOrigins);
