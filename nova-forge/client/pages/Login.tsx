@@ -162,7 +162,7 @@ export default function Login() {
             </div>
 
             {/* Right Side - Login Form (Previously Left) */}
-            <div className="w-full lg:w-1/2 flex items-center justify-center p-8 bg-background">
+            <div className="w-full lg:w-1/2 flex items-center justify-center p-8 bg-background relative">
                 <div className="w-full max-w-md space-y-8 animate-in slide-in-from-right-8 duration-500">
                     <div className="flex flex-col space-y-2 text-center">
                         <div className="mx-auto w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
@@ -240,6 +240,11 @@ export default function Login() {
                         </Link>
                         .
                     </p>
+                </div>
+
+                {/* Debug Info Footer */}
+                <div className="absolute bottom-4 right-4 text-[10px] text-gray-300 opacity-50 font-mono">
+                    API: {import.meta.env.VITE_API_URL || 'Default (localhost)'}
                 </div>
             </div>
         </div>
