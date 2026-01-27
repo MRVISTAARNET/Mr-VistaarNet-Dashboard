@@ -66,11 +66,9 @@ public class SecurityConfig {
         public CorsConfigurationSource corsConfigurationSource() {
                 CorsConfiguration configuration = new CorsConfiguration();
                 String allowedOriginsEnv = System.getenv("CORS_ALLOWED_ORIGINS");
-                List<String> allowedOrigins = allowedOriginsEnv != null && !allowedOriginsEnv.isBlank()
-                                ? Arrays.asList(allowedOriginsEnv.split(","))
-                                : List.of("http://localhost:5173", "http://0.0.0.0:5173",
-                                                "https://mr-vistaarnet-dashboard.netlify.app");
-                configuration.setAllowedOrigins(allowedOrigins);
+                // Allow all origins patterns to fix CORS issues on varied deployment URLs
+                configuration.addAllowedOriginPattern("*");
+                // configuration.setAllowedOrigins(allowedOrigins);
                 configuration.setAllowedMethods(
                                 Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH", "HEAD"));
                 configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "X-Requested-With",

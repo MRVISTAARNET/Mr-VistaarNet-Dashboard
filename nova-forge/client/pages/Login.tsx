@@ -41,6 +41,8 @@ export default function Login() {
             console.error("Login Error:", err);
             if (err.message === 'Login failed') {
                 setError('Invalid credentials');
+            } else if (err.message === 'Failed to fetch') {
+                setError('Network Error: Unable to connect to server. Please check your connection or try again later.');
             } else {
                 setError(`Connection Error: ${err.message}`);
             }
