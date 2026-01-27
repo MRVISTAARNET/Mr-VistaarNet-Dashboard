@@ -27,15 +27,15 @@ public class DataSourceConfig {
     public DataSource dataSource() {
         System.out.println("Initializing Custom DataSource...");
 
-        // FIX: Remove channel_binding=require if present, as it causes "SQLState:
-        // 99999" crashes
-        // on some driver versions in Docker environments.
+        // FIX: Remove channel_binding=require if present
         String sanitizedUrl = dbUrl;
         if (sanitizedUrl != null && sanitizedUrl.contains("channel_binding=require")) {
             System.out.println("Detected problematic 'channel_binding=require' in URL. Removing it.");
             sanitizedUrl = sanitizedUrl.replace("channel_binding=require", "");
-            // Clean up potentially double && or trailing ?
             sanitizedUrl = sanitizedUrl.replace("&&", "&");
+            if (sanitizedUrl.endsWith("&")) {
+                sanitizedUrl = sanitizedUrl.substring(0, sanitizedUrl.length() - 1);
+            }
             if (sanitizedUrl.endsWith("?")) {
                 sanitizedUrl = sanitizedUrl.substring(0, sanitizedUrl.length() - 1);
             }
