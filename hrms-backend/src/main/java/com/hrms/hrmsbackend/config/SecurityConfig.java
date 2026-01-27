@@ -24,7 +24,7 @@ public class SecurityConfig {
                                 .csrf(csrf -> csrf.disable())
                                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                                 .authorizeHttpRequests(auth -> auth
-                                                .requestMatchers("/api/auth/**", "/api/health").permitAll()
+                                                .requestMatchers("/api/auth/**").permitAll()
                                                 .requestMatchers("/v3/api-docs/**", "/swagger-ui/**",
                                                                 "/swagger-ui.html")
                                                 .permitAll() // OpenAPI
@@ -65,10 +65,12 @@ public class SecurityConfig {
         @Bean
         public CorsConfigurationSource corsConfigurationSource() {
                 CorsConfiguration configuration = new CorsConfiguration();
-                // String allowedOriginsEnv = System.getenv("CORS_ALLOWED_ORIGINS");
-                // Allow all origins patterns to fix CORS issues on varied deployment URLs
-                configuration.addAllowedOriginPattern("*");
-                // configuration.setAllowedOrigins(allowedOrigins);
+                String allowedOriginsEnv = System.getenv("CORS_ALLOWED_ORIGINS");
+                List<String> allowedOrigins = allowedOriginsEnv != null && !allowedOriginsEnv.isBlank()
+                                ? Arrays.asList(allowedOriginsEnv.split(","))
+                                : List.of("http://localhost:5173", "http://0.0.0.0:5173",
+                                                "https://mr-vistaarnet-dashboard.netlify.app");
+                configuration.setAllowedOrigins(allowedOrigins);
                 configuration.setAllowedMethods(
                                 Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH", "HEAD"));
                 configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "X-Requested-With",

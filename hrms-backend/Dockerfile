@@ -1,5 +1,5 @@
 # Use an official OpenJDK runtime as a parent image
-FROM eclipse-temurin:17-jdk
+FROM eclipse-temurin:17-jdk-alpine
 
 # Set the working directory in the container
 WORKDIR /app
@@ -13,7 +13,7 @@ COPY pom.xml .
 COPY src src
 
 # Install necessary tools
-RUN apt-get update && apt-get install -y dos2unix
+RUN apk add --no-cache dos2unix
 
 # Make the mvnw executable and fix line endings
 RUN dos2unix mvnw && chmod +x mvnw

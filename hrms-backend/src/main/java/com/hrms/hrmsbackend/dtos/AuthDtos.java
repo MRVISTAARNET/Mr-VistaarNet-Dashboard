@@ -53,6 +53,7 @@ public class AuthDtos {
         private String role;
         private String avatar;
         private String department;
+        @com.fasterxml.jackson.annotation.JsonProperty("isFirstLogin")
         private boolean isFirstLogin;
     }
 
