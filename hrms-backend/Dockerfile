@@ -21,5 +21,8 @@ RUN dos2unix mvnw && chmod +x mvnw
 # Package the application
 RUN ./mvnw package -DskipTests
 
+# Expose the port
+EXPOSE 8080
+
 # Run the jar file
 ENTRYPOINT ["java","-jar","target/hrms-backend-0.0.1-SNAPSHOT.jar"]
